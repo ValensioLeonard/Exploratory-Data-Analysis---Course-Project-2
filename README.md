@@ -134,3 +134,76 @@ barplot(Tot$Emissions,
 ![Plot2 Results](https://github.com/ValensioLeonard/Exploratory-Data-Analysis---Course-Project-2/blob/master/plot2.png)
 
 Based on the graphs, there was a decrease in emissions level from 1999 to 2002, but followed with an increase in 2005, and closed with a decrease in 2008
+
+## Question 3
+Of the four types of sources indicated by the `type` variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
+
+To answer this question, first read the data and subset it based on fips for Baltimore City, since we'll be needing ggplot2 in this question, don't forget to load it into R.
+
+```
+library(ggplot2)
+data <- readRDS("./summarySCC_PM25.rds")
+data <- data[data$fips == "24510",]
+```
+
+Next, use `aggregate` function to `sum` Emissions based on `year` and `type` , on `data`, assign the results to `Tot`.
+```
+Tot <- aggregate(Emissions ~ year + type, data, sum)
+```
+
+Prepare the Plot by calling `ggplot` function, assign Tot as the data and `year`,`Emissions` for the `aes` arguments, also add `color=type` to distinguish the plot type by color. Assign the function to variable `g`.
+`g <- ggplot(Tot, aes(year,Emissions, color = type))`
+
+Call the `geom_line` function to plot `g` into graphic device using line. Add the tittle using `ggtitle` function, and save the plot using `ggsave` function.
+```
+g + geom_line() + ggtitle("Total Emissions in Baltimore City")
+ggsave("plot3.png")
+```
+![Plot3 Results](https://github.com/ValensioLeonard/Exploratory-Data-Analysis---Course-Project-2/blob/master/plot3.png)
+
+
+## Question 4
+Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?
+
+To answer this question, read both data and merged them by `SCC` code.
+```
+data <- readRDS("./summarySCC_PM25.rds")
+src <- readRDS("./Source_Classification_Code.rds")
+final <- merge(data, src, by= "SCC")
+```
+After that, search for "coal" in `src` data under `Short.Name` column, `grep` function will return the number of row that meet these arguments.
+Subset the `final` data using this information. 
+```
+coal <- grep("coal", final$Short.Name, ignore.case = T)
+final <- final[coal, ]
+```
+Lastly, plotting the data will use these lines just like previous question.
+```
+Tot <- aggregate(Emissions ~ year, final, sum)
+g <- ggplot(Tot, aes(year, Emissions))
+g + geom_col() + xlab("year") + ggtitle("Total Emissions From Coal Sources in Baltimore City")
+```
+![Plot4 Results](https://github.com/ValensioLeonard/Exploratory-Data-Analysis---Course-Project-2/blob/master/plot4.png)
+
+## Question 5
+How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?
+
+This question will be using quite similar method from previous questions. After reading the data and merging it,
+search for vehicle using `grep` function under `SCC.Level.Two`. Assign the `final` data using this information
+```
+vec <- grep("vehicle", final$SCC.Level.Two, ignore.case = T)
+final <- final[vec, ]
+
+```
+Call the ggplot function and turn year into factor using `as.factor()` function
+```
+g <- ggplot(Tot, aes(as.factor(year), Emissions))
+g + geom_col() + xlab("year") + ggtitle("Total Emissions From Motor Sources in Baltimore City")
+```
+![Plot5 Results](https://github.com/ValensioLeonard/Exploratory-Data-Analysis---Course-Project-2/blob/master/plot5.png)
+
+## Question 6
+Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (`fips == "06037"`). Which city has seen greater changes over time in motor vehicle emissions?
+
+Using the same method to retrieve 
+
