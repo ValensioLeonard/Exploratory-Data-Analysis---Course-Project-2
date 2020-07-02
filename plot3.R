@@ -5,6 +5,8 @@ if(!file.exists("summarySCC_PM25.rds") & file.exists("Source_Classification_Code
         unzip("./data.zip")
         
 }
+## Load ggplot2 Package
+library(ggplot2)
 
 ## Read the summary data
 data <- readRDS("./summarySCC_PM25.rds")
