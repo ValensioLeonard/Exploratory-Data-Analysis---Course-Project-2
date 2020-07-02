@@ -205,5 +205,26 @@ g + geom_col() + xlab("year") + ggtitle("Total Emissions From Motor Sources in B
 ## Question 6
 Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (`fips == "06037"`). Which city has seen greater changes over time in motor vehicle emissions?
 
-Using the same method to retrieve 
+Using the same method to retrieve the vehicle row, subset the data based on that information.
+Also subset the data based o```n both L.A. and Baltimore City fips.
+```
+vec <- grep("vehicle", final$SCC.Level.Two, ignore.case = T)
+final <- final[vec, ]
+final <- final[final$fips == "24510" | final$fips == "06037",]
+```
+Sum up the emissions using aggregate function and plot it using the ggplot just like before. 
+```
+Tot <- aggregate(Emissions ~ year + fips, final, sum)
+
+g <- ggplot(Tot, aes(as.factor(year), Emissions))
+
+## Change the category into names of the city
+Tot$fips[Tot$fips == "06037"] <- "Los Angeles County" 
+Tot$fips[Tot$fips == "24510"] <- "Baltimore City"  
+
+g + geom_col() + xlab("year") + 
+        ggtitle("Total Emissions From Motor Sources") +
+        facet_wrap(.~Tot$fips)
+```
+![Plot6 Results](https://github.com/ValensioLeonard/Exploratory-Data-Analysis---Course-Project-2/blob/master/plot6.png)
 
