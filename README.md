@@ -55,4 +55,82 @@ You must address the following questions and tasks in your exploratory analysis.
 5. How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?
 6. Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (`fips == "06037"`). Which city has seen greater changes over time in motor vehicle emissions?
 
+## Preparing the data
+First and foremost, you should prepare the datasets in your working directory, all the Rscripts are equipped with starting code to check whether you have the datasets on your working directory. 
+The code appears as follows,
+
+```
+if(!file.exists("summarySCC_PM25.rds") & file.exists("Source_Classification_Code.rds")){
+        url <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
+        download.file(url, destfile = "./data.zip")
+        unzip("./data.zip")
+     
+}
+```
+If statement will check whether you have the datasets in your working directory, if one of the required data isn't there, it will download the datasets automatically.
+
+## Reading the data
+After the datasets are ready, you can read it into R using these following lines.
+```
+data <- readRDS("./summarySCC_PM25.rds")
+src <- readRDS("./Source_Classification_Code.rds")
+```
+
 ## Question 1
+Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008.
+
+First, use `aggregate` function to `sum` Emissions based on `year`, on `data`, assign the results to `Tot`
+
+```
+data <- readRDS("./summarySCC_PM25.rds")
+Tot <- aggregate(Emissions ~ year, data, sum)
+```
+
+Second, use the base plotting system `barplot`, since we will be constructing barplot, the data needed will only be the 
+Emissions column from Tot data, add names arguments based on year, and add axis title and main title
+
+```
+barplot(Tot$Emissions, 
+        names.arg = Tot$year, 
+        xlab = "Year", 
+        ylab = "Emissions Level", 
+        main = "PM 2.5 Level Throughout the years")
+```
+
+Lastly, Save the plot results into png format using `dev.copy`, and close the graphic system.
+
+```
+dev.copy(png, file="plot1.png")
+dev.off()
+```
+![Plot1 Results](https://github.com/ValensioLeonard/Exploratory-Data-Analysis---Course-Project-2/blob/master/plot1.png)
+
+As we can see from the plot, the emissions level did decrease from 1999 to 2008, based on our data that we analyze.
+
+## Question 2
+Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (`fips == "24510"`) from 1999 to 2008? Use the base plotting system to make a plot answering this question.
+
+To answer this question, steps that we take will mostly be the same, expect we must first subset the data according to the fips number for Baltimore City
+
+```
+data <- readRDS("./summarySCC_PM25.rds")
+data <- data[data$fips == "24510",]
+```
+
+After this, we shall use `aggregate` function to `sum` Emissions based on `year`, on `data`, assign the results to `Tot` just like previous question.
+
+`Tot <- aggregate(Emissions ~ year, data, sum)`
+
+Lastly, call the barplot function to plot the emissions, and save the plot before closing the plotting devices
+```
+barplot(Tot$Emissions, 
+        names.arg = Tot$year, 
+        xlab = "Year", 
+        ylab = "Emissions Level", 
+        main = "PM 2.5 in Baltimore City")
+```
+
+
+![Plot2 Results](https://github.com/ValensioLeonard/Exploratory-Data-Analysis---Course-Project-2/blob/master/plot2.png)
+
+Based on the graphs, there was a decrease in emissions level from 1999 to 2002, but followed with an increase in 2005, and closed with a decrease in 2008
